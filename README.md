@@ -16,12 +16,11 @@ The codebase conducts an exhaustive computational search over all $2^8 = 256$ se
 
 ```text
 .
+├── README.md                           # Documentation and replication guide 
 ├── concurrent_games_ESS_simulation.py  # Core simulation engine (ESS enumeration & filtering)
 ├── plot_figure1.py                     # Standalone replication script for Figure 1
 ├── plot_max_payoff_by_Q.py             # Plotting script for Figure 3 & Figure 4 (Q vs Max Payoff)
-├── requirements.txt                    # Python library dependencies
-├── LICENSE                             # MIT License
-└── README.md                           # Documentation and replication guide
+└── requirements.txt                    # Python library dependencies
 ```
 
 ---
@@ -46,23 +45,29 @@ pip install -r requirements.txt
 The implementation strictly reflects the model described in the manuscript:
 
 1. **Reputation Transitions (Eqs. 11–12)**: Accounts for independent action execution errors $\mu_e$ and reputation assessment errors $\mu_a$ for each game interaction.
+
 2. **Reputation Fusion (Eqs. 13–15)**:
-   - **AND rule ($f_A$, Eq. 13)**:
-     $$D_{h \hat{h}_1 \hat{h}_2}^s = D_{h \hat{h}_1}^{s, 1} \cdot D_{h \hat{h}_2}^{s, 2}$$
-   - **OR rule ($f_O$, Eq. 14)**:
-     $$D_{h \hat{h}_1 \hat{h}_2}^s = 1 - (1 - D_{h \hat{h}_1}^{s, 1})(1 - D_{h \hat{h}_2}^{s, 2})$$
-   - **Probabilistic rule ($f_Q$, Eq. 15)**:
-     $$D_{h \hat{h}_1 \hat{h}_2}^s = (1 - Q) D_{h \hat{h}_1}^{s, 1} + Q D_{h \hat{h}_2}^{s, 2}$$
+   - **AND rule ($f_A$, Eq. 13)**: $`D_{h \hat{h}_1 \hat{h}_2}^s = D_{h \hat{h}_1}^{s, 1} \cdot D_{h \hat{h}_2}^{s, 2}`$
+   - **OR rule ($f_O$, Eq. 14)**: $`D_{h \hat{h}_1 \hat{h}_2}^s = 1 - (1 - D_{h \hat{h}_1}^{s, 1})(1 - D_{h \hat{h}_2}^{s, 2})`$
+   - **Probabilistic rule ($f_Q$, Eq. 15)**: $`D_{h \hat{h}_1 \hat{h}_2}^s = (1 - Q) D_{h \hat{h}_1}^{s, 1} + Q D_{h \hat{h}_2}^{s, 2}`$
+
 3. **Stationary Reputation $H^*$ (Eq. 16)**:
    - Evaluates the cubic characteristic polynomial for resident steady-state good reputation $H^*(s) \in [0, 1]$.
    - *Note on multi-stability*: If multiple valid real roots exist in $[0, 1]$, the branch maximizing resident expected payoff $\pi(s|s)$ is tracked.
    - Mutant reputation $H^*(s')$ is solved analytically as:
+
      $$H^*(s') = \frac{F}{1 - E + F}$$
+
 4. **Realized Cooperation (Eq. 20)**: Incorporates execution noise via the affine transformation:
+
    $$\tilde{Y}_i(\cdot, \cdot) = \mu_e + (1 - 2\mu_e) Y_i(\cdot, \cdot)$$
+
 5. **Evolutionary Stability (Definition 2, Eq. 23)**: Computes resident payoff $\pi(s|s)$ (Eq. 21) and mutant payoff $\pi(s'|s)$ (Eq. 22). Evaluates whether:
+
    $$\pi(s|s) > \max_{s' \ne s} \pi(s'|s) + \varepsilon$$
+
    against all 255 alternative mutant strategies.
+
 6. **Classification & Filtering (Definition 1)**:
    - **Cooperative**: $d_{11}^C = 1$ and $s_{11}^1 = s_{11}^2 = C$.
    - **Semi-cooperative**: $d_{11}^C = 1$ and ($s_{11}^1 = C$ or $s_{11}^2 = C$).
